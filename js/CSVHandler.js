@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'underscore.string'], function ($, _, _s) {
+define(['q', 'underscore', 'underscore.string'], function (Q, _, _s) {
   "use strict";
 
   function CSVHandler() {
@@ -12,8 +12,12 @@ define(['jquery', 'underscore', 'underscore.string'], function ($, _, _s) {
    * Example: [Container, Container, Container...]
    *
    **/
-  CSVHandler.prototype.parse = function (Container, csv) {
+  CSVHandler.prototype.parse = function (Container, structure, csv) {
     var self = this;
+
+    if(!csv) {
+      throw new Error('ParseError: No data to parse.');
+    }
 
     // initialize array for objects
     var containers = [];
@@ -23,73 +27,88 @@ define(['jquery', 'underscore', 'underscore.string'], function ($, _, _s) {
     lines.forEach(function (line) {
       // ignore comments
       if (!_s.startsWith(line, '#')) {
-        containers.push(self.parseLine(Container, line));
+        containers.push(self.parseLine(Container, structure, line));
       }
     });
     return containers;
   };
 
-  CSVHandler.prototype.parseLine = function (Container, line) {
-    var structure = Container.structure;
-    // initialize object
-    var container;
-    // initialize various variables
-    var values, property, i, parsed;
-
+  /**
+   * Converts a comma separated text line of properties into an object of type fConstructor
+   * @param Constructor
+   * @param structure
+   * @param line
+   * @returns {Constructor}
+   */
+  CSVHandler.prototype.parseLine = function (Constructor, structure, line) {
+    if(!_.isObject(structure)) {
+      throw new Error('ParseError: Need structure object to parse line.');
+    }
     // split line into values
-    values = line.split(',');
-    // initialize value key
+    var values = line.split(',');
+    // initialize parameter object
+    var params = {};
+    // initialize various variables
+    var property, i, parsed;
+    // initialize value incrementer
     i = 0;
-    // construct container object
-    container = new Container();
     // iterate over properties in structure object
     for (property in structure) {
       // ignore irrelevant properties
       if (structure.hasOwnProperty(property)) {
-        // need to handle Booleans as special case because Boolean('0') -> true
-        if (structure[property] === Boolean) {
-          parsed = values[i].toBoolean();
-        }
+
         // if value is an empty string, set it to null
-        else if (values[i] === "") {
+        if (values[i] === "") {
           parsed = null;
         }
-        // convert values according to structure object
+        // Boolean('0') === true
+        else if(structure[property] === Boolean) {
+          parsed = toBoolean(values[i]);
+        }
+        // parse values with constructor functions in structure object
         else {
           parsed = structure[property](values[i]);
         }
-        // assign property to parsed value
-        container[property] = parsed;
+        // store parsed value in parameter object
+        params[property] = parsed;
+
+        // we don't have any more values
+        if(++i === values.length) {
+          break;
+        }
       }
-      i++;
     }
 
-    return container;
-  };
-
-  CSVHandler.prototype.load = function (url, callback) {
-    return $.ajax({
-      'url': url,
-      'contentType': "text/csv",
-      'success': callback
-    });
+    //console.log(Constructor.name, params);
+    return new Constructor(params);
   };
 
   /**
    *
    *
    **/
-  CSVHandler.prototype.loadParse = function (Container, url, callback) {
+  CSVHandler.prototype.loadParse = function (Container, structure, url) {
     var self = this;
-
-    return $.when(this.load(url, callback))
+    return Q.when(this.load(url))
       .then(function (data) {
-        return self.parse(Container, data);
+        return self.parse(Container, structure, data);
       });
   };
 
-  return new CSVHandler();
+  CSVHandler.prototype.load = function (location) {
+    return _context.loadFile(location, 'text/csv');
+  };
 
+  function toBoolean(str) {
+    switch (str) {
+      case "true": case "yes": case "1":return true;
+      case "false": case "no": case "0":return false;
+      default: return Boolean(str);
+    }
+  }
+
+
+  return new CSVHandler();
 });
 
 
