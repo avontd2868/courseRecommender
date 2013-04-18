@@ -3,31 +3,6 @@
     <head>
         <title>Course recommender</title>
     </head>
-    <script src="js/utilities.js"></script>
-    <script data-main="js/Main.js" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.5/require.min.js"></script>
-    <script>
-      // configure dependency paths to CDN
-      require.config({
-        paths: {
-          baseUrl: "js",
-          "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min",
-          "underscore": "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min",
-          "underscore.string": "//cdnjs.cloudflare.com/ajax/libs/underscore.string/2.3.0/underscore.string.min",
-          "backbone": "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min",
-          "domReady": "//cdnjs.cloudflare.com/ajax/libs/require-domReady/2.0.1/domReady",
-          "sylvester": "//cdnjs.cloudflare.com/ajax/libs/sylvester/0.1.3/sylvester"
-        }, 
-        shim: {
-          'underscore': {
-            exports: '_'
-          },
-          'backbone': {
-            exports: 'Backbone'
-          }
-
-        }
-      });
-    </script>
     <body>
         <div>
             <h1>Welcome to my course recommender</h1>
@@ -87,7 +62,7 @@
                 <legend>Batch testing csv file</legend>
                 <input class="batch-test" type="file" name="batchfile" />
             </fieldset>
-
+        <script src="js/lib/require.min.js"></script>
+        <script src="browser.js"></script>
     </body>
-
 </html>
