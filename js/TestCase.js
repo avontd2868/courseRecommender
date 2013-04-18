@@ -1,13 +1,13 @@
-define(['CSVHandler', 'Student'], function(CSVHandler, Student) {
+define(['underscore', 'CSVHandler', 'Student', 'Course'], function(_, CSVHandler, Student, Course) {
 
-// #Std No,undergrad,female,local,gpa,Course,Course,Course,Course,Recommendation 1,Rec 2,Rec 3
-// 11,1,1,1,3,1,2,,,5,6,3
+	function Testcase(params) {
 
-	function TestCase() {
-		
+    _.extend(this, params);
 	}
 
-	TestCase.structure = {
+
+  // #Std No,undergrad,female,local,gpa,Course,Course,Course,Course,Recommendation 1,Rec 2,Rec 3
+  Testcase.structure = {
 			'student': Number,
 			'undergrad': Boolean,
 			'female': Boolean,
@@ -22,29 +22,45 @@ define(['CSVHandler', 'Student'], function(CSVHandler, Student) {
 			'rec3': Number
 	}
 
-  TestCase.prototype.getStudent = function() {
-    var student = new Student();
+  Testcase.prototype.getStudent = function() {
+    var params = {};
     for(var property in Student.structure) {
-      student[property] = this[property];
+      params[property] = this[property];
     }
-    return student;
-  }
-
-  TestCase.prototype.getRecs = function() {
-    return {
-      rec1: this.rec1,
-      rec2: this.rec2,
-      rec3: this.rec3
-    };
+    return new Student(params);
   };
 
-	TestCase.getAll = function(callback) {
-		return CSVHandler.loadParse(TestCase, 'data/test.csv', callback);
-	}
+  Testcase.prototype.getRecs = function() {
+    return [this.rec1, this.rec2, this.rec3];
+  };
 
-  TestCase.fromCSV = function(data) {
-    return CSVHandler.parse(TestCase, data);
-  }
+	Testcase.getAll = function() {
+		return CSVHandler.loadParse(Testcase, Testcase.structure, 'data/test.csv');
+	};
 
-	return TestCase;
+  Testcase.fromCSV = function(data) {
+    return CSVHandler.parse(Testcase, Testcase.structure, data);
+  };
+
+  Testcase.assertAll = function(testcases, recommender) {
+
+
+    // assert
+    testcases.forEach(function (testcase) {
+      var pass = true;
+      var testRecs = testcase.getRecs();
+
+      var recs = recommender.getRecs(testcase.getStudent());
+
+      for (var rec in testRecs) {
+        if (testRecs[rec] !== recs[rec]) {
+          pass = false;
+        }
+      }
+      console.assert(pass, "Incorrect recommendation");
+
+    });
+  };
+
+	return Testcase;
 });
