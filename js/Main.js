@@ -1,47 +1,41 @@
-define(['Student',
-        'CourseRating',
-        'TestCase',
-        'DOM',
-        'domReady'], function(Student, CourseRating, TestCase, DOM) {
+define(['Utility',
+  'q',
+  'Student',
+  'Course',
+  'Testcase',
+  'Recommender'], function (Utility, Q, Student, Course, Testcase, Recommender) {
   "use strict";
 
-  $.when(
-    CourseRating.getAll(),
-    Student.getAll(),
-    TestCase.getAll())
-    .then(function(ratings, students, testCases) {
+  function Main(global, environment) {
 
-      // avg score for course 1
-      var avg = _.where(ratings, {course:1}).map(function(rating) {return rating.student_score}).avg();
+    // attach utility methods to global object
+    Utility(global);
+    global._context = environment;
 
-    // assert
-    testCases.forEach(function(testCase) {
+    Q.all([Course.getOldCourses(),
+          Course.getNewCourses(),
+        Student.getAll()])
+      .spread(function (oldCourses, newCourses, students) {
 
-      var testRecs = testCase.getRecs();
+       var recommender = new Recommender(oldCourses, newCourses, students);
 
-      var recs = getRecs(testCase.getStudent());
+        // automatically run testcases from file
+        Q.all([Testcase.getAll(), recommender]).spread(Testcase.assertAll);
 
-      for(var rec in testRecs) {
-        console.assert(testRecs[rec] === recs[rec]);
-      }
+        // run testcases when given from context
+        environment.on('submit:testcases', function(testcases) {
 
-    });
+        });
 
+        environment.on('submit:studentquery', function(student) {
 
-    function getRecs(student) {
+        });
 
+      },
+      function error(err) {
+        console.error(err);
+      });
+  }
 
-      return {rec1: 1, rec2: 2, rec3: 3};
-    }
-
-    DOM.on('submit:testcases', function(testcases) {
-      console.log('testcases', testcases);
-    });
-
-    DOM.on('submit:student', function(student) {
-      // show recommendations for this student
-      console.log('student', student);
-    });
-
-  });
+  return Main;
 });
