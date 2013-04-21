@@ -1,0 +1,35 @@
+body {
+    padding: 10px;
+}
+
+form.get-recommendation .radios {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+}
+
+.radios > div {
+    width: 110px;
+    padding: 0 20px 10px;
+    margin-bottom: 10px;
+}
+.radios > div:not(:last-child) {
+    border-right: 1px dotted #000;
+
+}
+
+.radios label {
+    float:left;
+    padding-right: 10px;
+}
+.radios input {
+    margin:0 auto;
+}
+
+.courses input, .gpa input {
+    width: 20px;
+}
+
+input[type=submit] {
+    margin-top: 20px;
+}

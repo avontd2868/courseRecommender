@@ -1,68 +1,81 @@
 <!doctype html>
 <html>
-    <head>
-        <title>Course recommender</title>
-    </head>
-    <body>
-        <div>
-            <h1>Welcome to my course recommender</h1>
-        </div>
-        <form class="get-recommendation" method="get">
+<head>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <title>Course recommender</title>
+</head>
+<body>
+<h4>COSC1165 Intelligent Web Systems - Assignment 1</h4>
+<h6>Dag Einar Monsen <<a href="mailto:s3391542@student.rmit.edu.au">s3391542@student.rmit.edu.au</a>></h6>
+<h3>Course recommender</h3>
+<div class="row">
+    <div class="single span7">
+        <form class="form-horizontal get-recommendation" method="get">
             <fieldset>
                 <legend>Please tell me about yourself</legend>
-                <input type="hidden" name="student" value="-1" />
-                <div>
-                    <label>Postgrad
-                        <input type="radio" name="undergrad" value="0" />
-                    </label>
-                    <label>Undergrad
-                        <input type="radio" name="undergrad" value="1" />
-                    </label>
+                <input type="hidden" name="student" value="-1"/>
+
+                <div class="radios">
+                    <div class="">
+                        <label class="">Postgrad
+                            <input type="radio" name="undergrad" value="0"/>
+                        </label>
+                        <label class="">Undergrad
+                            <input type="radio" name="undergrad" value="1"/>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="">International
+                            <input type="radio" name="local" value="0"/>
+                        </label>
+                        <label class="">Local
+                            <input type="radio" name="local" value="1"/>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="">Male
+                            <input type="radio" name="female" value="0"/>
+                        </label>
+                        <label class="">Female
+                            <input type="radio" name="female" value="1"/>
+                        </label>
+                    </div>
                 </div>
-                <div>
-                    <label>International
-                        <input type="radio" name="local" value="0" />
-                    </label>
-                    <label>Local
-                        <input type="radio" name="local" value="1" />
-                    </label>
-                </div>
-                <div>
-                    <label>Male
-                        <input type="radio" name="female" value="0" />
-                    </label>
-                    <label>Female
-                        <input type="radio" name="female" value="1" />
-                    </label>
-                </div>
-                <div>
-                    <label>GPA
-                        <input type="text" name="gpa" placeholder="-1 means new student" />
+                <div class="gpa">
+                    <label>GPA (-1 means new student)
+                        <input type="text" name="gpa" placeholder=""/>
                     </label>
                 </div>
             </fieldset>
             <fieldset>
-                <legend>Tell me the most recent 4 courses that you have completed</legend>
-                <label>Course 1
-                    <input type="text" name="course1" />
-                </label>
-                <label>Course 2
-                    <input type="text" name="course2" />
-                </label>
-                <label>Course 3
-                    <input type="text" name="course3" />
-                </label>
-                <label>Course 4
-                    <input type="text" name="course4" />
-                </label>
+                <legend>Most recent 4 courses:</legend>
+                <div class="courses">
+                    <label class="inline radio">Course 1
+                        <input type="text" name="course1"/>
+                    </label>
+                    <label class="inline radio">Course 2
+                        <input type="text" name="course2"/>
+                    </label>
+                    <label class="inline radio">Course 3
+                        <input type="text" name="course3"/>
+                    </label>
+                    <label class="inline radio">Course 4
+                        <input type="text" name="course4"/>
+                    </label>
+                </div>
             </fieldset>
-            <input type="submit" value="submit" />
+            <input type="submit" class="btn btn-primary btn-block" value="submit"/>
         </form>
-            <fieldset>
-                <legend>Batch testing csv file</legend>
-                <input class="batch-test" type="file" name="batchfile" />
-            </fieldset>
-        <script src="js/lib/require.min.js"></script>
-        <script src="browser.js"></script>
-    </body>
+    </div>
+    <div class="batch span4">
+        <fieldset>
+            <legend>Batch testing csv file</legend>
+            <input class="batch-test" type="file" name="batchfile"/>
+        </fieldset>
+    </div>
+</div>
+<script src="js/lib/require.min.js"></script>
+<script src="browser.js"></script>
+</body>
 </html>
