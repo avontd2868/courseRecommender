@@ -57,10 +57,15 @@ define(['q', 'underscore', 'underscore.string'], function (Q, _, _s) {
       // ignore irrelevant properties
       if (structure.hasOwnProperty(property)) {
 
+        if (values[i].match(/^[0-9]+$/)) {
+          values[i] = Number(values[i]);
+        }
+
         // if value is an empty string, set it to null
         if (values[i] === "") {
           parsed = null;
         }
+
         // Boolean('0') === true
         else if(structure[property] === Boolean) {
           parsed = toBoolean(values[i]);
@@ -81,22 +86,6 @@ define(['q', 'underscore', 'underscore.string'], function (Q, _, _s) {
 
     //console.log(Constructor.name, params);
     return new Constructor(params);
-  };
-
-  /**
-   *
-   *
-   **/
-  CSVHandler.prototype.loadParse = function (Container, structure, url) {
-    var self = this;
-    return Q.when(this.load(url))
-      .then(function (data) {
-        return self.parse(Container, structure, data);
-      });
-  };
-
-  CSVHandler.prototype.load = function (location) {
-    return _context.loadFile(location, 'text/csv');
   };
 
   function toBoolean(str) {
