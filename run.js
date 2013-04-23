@@ -7,6 +7,9 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['Main', 'CLI'], function (Main, CLI) {
-  new Main(CLI);
+requirejs(['Utility'], function(Utility) {
+  Utility(global);
+  requirejs(['CLI'], function (CLI) {
+    new CLI();
+  })
 });

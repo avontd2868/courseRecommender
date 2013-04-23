@@ -1,58 +1,22 @@
-define(['underscore', 'q', 'CSVHandler'], function (_, Q, CSVHandler) {
+define(['underscore'], function (_) {
 
   /**
-   * A Course object consist of multiple editions
+   * A Course object
    * @constructor
    */
-  function Course(params) {
-    if (typeof params === "number") {
-      if (!(params in Course.collection)) {
-        var course = new Course();
-        course._id = params;
-        Course.collection[params] = course;
-      }
-      return Course.collection[params];
-    }
 
-    _.extend(this, params);
+  var Course = Class.extend({
+    init:function(params) {
+      _.extend(this, params);
+    },
 
-  }
-
-  Course.collection = {};
-
-  Course.getOldCourses = function () {
-    return CSVHandler.loadParse(Course, {
-      '_id': Number,
-      'lecturer': Number,
-      'tutor': Number,
-      'core': Boolean,
-      'student': Number,
-      'student_score': Number
-    }, 'data/course.csv');
-  };
-
-  Course.getNewCourses = function () {
-    return CSVHandler.loadParse(Course, {
-      '_id': Number,
-      'lecturer': Number,
-      'tutor': Number
-    }, 'data/course-next.csv');
-  };
-
-  Course.getAll = function() {
-    return Q.when(Course.getOldCourses(), Course.getNewCourses())
-      .then(function(history,future) {
-        return {history: history, future:future};
-    });
-  }
-
-  /**
-   * binary: course, lecturer, tutor
-   *
-   * @param course
-   * @returns {number}
-   */
-  Course.prototype.getSimilarity = function (course) {
+    /**
+     * binary: course, lecturer, tutor
+     *
+     * @param course
+     * @returns {number}
+     */
+    getSimilarity: function (course) {
 
     if (!(course instanceof this.constructor)) {
       throw new TypeError('Illegal parameter.')
@@ -71,7 +35,7 @@ define(['underscore', 'q', 'CSVHandler'], function (_, Q, CSVHandler) {
     // initialize similarity integer
     var similarity = 0;
   }
+  });
 
   return Course;
-
 });

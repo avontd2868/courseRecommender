@@ -9,6 +9,7 @@ require.config({
     "domReady": "lib/domReady",
     "sylvester": "lib/sylvester",
     "asEvented": "lib/asEvented.min",
+    "numeric": "lib/numeric-1.2.6.min",
     "q": "lib/q.min"
   },
   shim: {
@@ -17,11 +18,18 @@ require.config({
     },
     'backbone': {
       exports: 'Backbone'
+    },
+    'numeric': {
+      exports: 'numeric'
     }
-
   }
 });
 
-require(['Main', 'DOM', 'Utility'], function(Main, DOM, Utility) {
-  new Main(window, DOM);
+require(['Utility'], function(Utility) {
+  Utility(window);
+  require(['DOM'], function (DOM) {
+    new DOM();
+  });
 });
+
+

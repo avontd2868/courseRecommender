@@ -1,37 +1,54 @@
 define(['q',
-  'DataHandler',
   'Recommender',
-  'Testcase'], function (Q,DataHandler, Recommender , Testcase) {
+  'Testcase'], function (Q, Recommender, Testcase) {
   "use strict";
 
-  function Main(environment) {
-    Q.all([DataHandler.loadStudents(),
-           DataHandler.loadRatedCourses(),
-           DataHandler.loadTestcase()])
-      .spread(function () {
-
-        console.log('loaded all data', arguments);
-
-        //var recommender = new Recommender();
-
-        // automatically run testcases from file
-       // Q.all([Testcase.getAll(), recommender]).spread(Testcase.assertAll);
-
-        // run testcases when given from context (CLI/DOM)
-        environment.on('submit:testcases', function (testcases) {
-
-        });
-
-        environment.on('submit:query', function (student) {
-
-        });
-
-        // let environment know that we're ready to handle input!
-        environment.ready();
-      },
-      function error(err) {
-        console.error(err);
-      });
+  Q.onerror = function(err) {
+    console.error(err);
   }
-  return Main;
+
+  var Controller = Class.extend({
+    init: function (environment) {
+
+
+      Q.all([
+          environment.loadRatedCourses(),
+          environment.loadStudents()])
+        .spread(function (ratedCourses, students) {
+
+          //console.log('loaded ratedCourses, students', ratedCourses, students);
+
+          var recommender = new Recommender(ratedCourses, students);
+          // load testcases from file
+          Q.when(environment.loadTestcases()).then(function (tc) {
+            recommender.setCourseData(tc.courseData);
+
+            // assert all
+            //var results = Testcase.assertAll(tc.testcases, recommender);
+
+            // assert one
+            var results = [tc.testcases[0].assert(recommender)];
+
+            environment.displayBatchResults(results);
+          });
+
+
+          // run testcases when given from context (CLI/DOM)
+          environment.on('submit:batch', function (tc) {
+            recommender.setCourseData(tc.courseData);
+            var results = Testcase.assertAll(tc.testcases, recommender);
+            environment.displayBatchResults(results);
+          });
+
+          // run query given from context (CLI/DOM)
+          environment.on('submit:query', function (student) {
+            var recs = recommender.getRecs(student);
+            environment.displayQueryResults(recs);
+          });
+
+        });
+    }
+  });
+
+  return Controller;
 });

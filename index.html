@@ -8,74 +8,102 @@
 <body>
 <h4>COSC1165 Intelligent Web Systems - Assignment 1</h4>
 <h6>Dag Einar Monsen <<a href="mailto:s3391542@student.rmit.edu.au">s3391542@student.rmit.edu.au</a>></h6>
-<h3>Course recommender</h3>
-<div class="row">
-    <div class="single span7">
-        <form class="form-horizontal get-recommendation" method="get">
-            <fieldset>
-                <legend>Please tell me about yourself</legend>
-                <input type="hidden" name="student" value="-1"/>
 
-                <div class="radios">
-                    <div class="">
-                        <label class="">Postgrad
-                            <input type="radio" name="undergrad" value="0"/>
-                        </label>
-                        <label class="">Undergrad
-                            <input type="radio" name="undergrad" value="1"/>
-                        </label>
-                    </div>
-                    <div>
-                        <label class="">International
-                            <input type="radio" name="local" value="0"/>
-                        </label>
-                        <label class="">Local
-                            <input type="radio" name="local" value="1"/>
-                        </label>
-                    </div>
-                    <div>
-                        <label class="">Male
-                            <input type="radio" name="female" value="0"/>
-                        </label>
-                        <label class="">Female
-                            <input type="radio" name="female" value="1"/>
-                        </label>
-                    </div>
-                </div>
-                <div class="gpa">
-                    <label>GPA (-1 means new student)
-                        <input type="text" name="gpa" placeholder=""/>
+<h3>Course recommender</h3>
+
+<div class="row">
+    <form class="query span7 form-horizontal query" method="get">
+        <fieldset>
+            <legend>Please tell me about yourself</legend>
+            <input type="hidden" name="student" value="-1"/>
+
+            <div class="radios">
+                <div class="">
+                    <label class="">Postgrad
+                        <input type="radio" name="undergrad" value="0"/>
+                    </label>
+                    <label class="">Undergrad
+                        <input type="radio" name="undergrad" value="1"/>
                     </label>
                 </div>
-            </fieldset>
-            <fieldset>
-                <legend>Most recent 4 courses:</legend>
-                <div class="courses">
-                    <label class="inline radio">Course 1
-                        <input type="text" name="course1"/>
+                <div>
+                    <label class="">International
+                        <input type="radio" name="local" value="0"/>
                     </label>
-                    <label class="inline radio">Course 2
-                        <input type="text" name="course2"/>
-                    </label>
-                    <label class="inline radio">Course 3
-                        <input type="text" name="course3"/>
-                    </label>
-                    <label class="inline radio">Course 4
-                        <input type="text" name="course4"/>
+                    <label class="">Local
+                        <input type="radio" name="local" value="1"/>
                     </label>
                 </div>
-            </fieldset>
-            <input type="submit" class="btn btn-primary btn-block" value="submit"/>
-        </form>
-    </div>
-    <div class="batch span4">
+                <div>
+                    <label class="">Male
+                        <input type="radio" name="female" value="0"/>
+                    </label>
+                    <label class="">Female
+                        <input type="radio" name="female" value="1"/>
+                    </label>
+                </div>
+            </div>
+            <div class="gpa">
+                <label>GPA (-1 means new student)
+                    <input type="text" name="gpa" placeholder=""/>
+                </label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Most recent 4 courses:</legend>
+            <div class="courses">
+                <label class="inline radio">Course 1
+                    <input type="text" name="course1"/>
+                </label>
+                <label class="inline radio">Course 2
+                    <input type="text" name="course2"/>
+                </label>
+                <label class="inline radio">Course 3
+                    <input type="text" name="course3"/>
+                </label>
+                <label class="inline radio">Course 4
+                    <input type="text" name="course4"/>
+                </label>
+            </div>
+        </fieldset>
+        <input type="submit" class="btn btn-primary btn-block" value="submit"/>
+    </form>
+
+    <div class="query result span7"></div>
+
+    <form class="batch span5">
         <fieldset>
             <legend>Batch testing csv file</legend>
-            <input class="batch-test" type="file" name="batchfile"/>
+            <input type="file" name="batchfile"/>
         </fieldset>
-    </div>
+    </form>
+    <div class="batch result span5"></div>
+
 </div>
 <script src="js/lib/require.min.js"></script>
 <script src="browser.js"></script>
+
+<script type="text/template" class="template query-result">
+    <a href="#" class="query-back"> << Back </a>
+    <h5>Recommendations:</h5>
+    <ol>
+        <% _.each(results, function(result) { %>
+        <li><%- result %></li>
+        <% }); %>
+    </ol>
+</script>
+<script type="text/template" class="template batch-result">
+    <a href="#" class="batch-back"> << Back </a>
+    <h5>Running testcases ... </h5>
+    <ul>
+        <% _.each(results, function(res) { %>
+        <li>
+            <span class="<%- res.pass ? 'pass' : 'fail' %>"><%- res.pass ? 'Correct' : 'Incorrect' %></span> recommendation:
+            <%- "{0} ({1}), {2} ({3}), {4} ({5})"
+            .format(res.recs[0],res.trecs[0]||0,res.recs[1],res.trecs[1]||'',res.recs[2]||'',res.trecs[2]||'') %>
+        </li>
+        <% }); %>
+    </ul>
+</script>
 </body>
 </html>

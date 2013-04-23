@@ -2,7 +2,7 @@ body {
     padding: 10px;
 }
 
-form.get-recommendation .radios {
+form.query .radios {
     display: -webkit-box;
     display: -moz-box;
     display: box;
@@ -32,4 +32,24 @@ form.get-recommendation .radios {
 
 input[type=submit] {
     margin-top: 20px;
+}
+
+.result {
+    display:none;
+}
+
+.result .pass,.result .fail {
+    font-weight:bold;
+}
+
+.result .pass {
+    color:green;
+}
+
+.result .fail {
+    color: red;
+}
+
+.query.result {
+
 }

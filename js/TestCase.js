@@ -1,66 +1,68 @@
-define(['underscore', 'CSVHandler', 'Student', 'Course'], function(_, CSVHandler, Student, Course) {
+define(['underscore', 'Student', 'Course'], function (_, Student, Course) {
 
-	function Testcase(params) {
+  var Testcase = Class.extend({
 
-    _.extend(this, params);
-	}
+    init: function (params) {
 
+      _.extend(this, params);
+    },
 
-  // #Std No,undergrad,female,local,gpa,Course,Course,Course,Course,Recommendation 1,Rec 2,Rec 3
-  Testcase.structure = {
-			'student': Number,
-			'undergrad': Boolean,
-			'female': Boolean,
-			'local': Boolean,
-			'gpa': Number,
-			'course1': Number,
-			'course2': Number,
-			'course3': Number,
-			'course4': Number,
-			'rec1': Number,
-			'rec2': Number,
-			'rec3': Number
-	}
+    getStudent: function () {
+      var params = {};
+      for (var property in Student.structure) {
+        params[property] = this[property];
+      }
+      return new Student(params);
+    },
 
-  Testcase.prototype.getStudent = function() {
-    var params = {};
-    for(var property in Student.structure) {
-      params[property] = this[property];
-    }
-    return new Student(params);
-  };
+    getRecs: function () {
+      return [this.rec1, this.rec2, this.rec3];
+    },
 
-  Testcase.prototype.getRecs = function() {
-    return [this.rec1, this.rec2, this.rec3];
-  };
+    /**
+     * Assert if the testcase is correct
+     * @param recommender
+     * @returns {{testcase: *, pass: boolean, trecs: *, recs: (*|{rec1: number, rec2: number, rec3: number})}}
+     */
+    assert: function(recommender) {
+      var trecs = this.getRecs();
+      var recs = recommender.getRecs(this.getStudent());
 
-	Testcase.getAll = function() {
-		return CSVHandler.loadParse(Testcase, Testcase.structure, 'data/test.csv');
-	};
-
-  Testcase.fromCSV = function(data) {
-    return CSVHandler.parse(Testcase, Testcase.structure, data);
-  };
-
-  Testcase.assertAll = function(testcases, recommender) {
-
-
-    // assert
-    testcases.forEach(function (testcase) {
       var pass = true;
-      var testRecs = testcase.getRecs();
-
-      var recs = recommender.getRecs(testcase.getStudent());
-
-      for (var rec in testRecs) {
-        if (testRecs[rec] !== recs[rec]) {
+      for (var rec = 0, l = trecs.length; rec < l; rec++) {
+        if (trecs[rec] !== recs[rec]) {
           pass = false;
         }
       }
-      console.assert(pass, "Incorrect recommendation");
+      // create and return result object
+      return {testcase: this, pass: pass, trecs: trecs, recs: recs};
+    }
 
-    });
+  });
+
+  // #Std No,undergrad,female,local,gpa,Course,Course,Course,Course,Recommendation 1,Rec 2,Rec 3
+  Testcase.structure = {
+    'id': Number,
+    'undergrad': Boolean,
+    'female': Boolean,
+    'local': Boolean,
+    'gpa': Number,
+    'course1': Number,
+    'course2': Number,
+    'course3': Number,
+    'course4': Number,
+    'rec1': Number,
+    'rec2': Number,
+    'rec3': Number
   };
 
-	return Testcase;
+  Testcase.assertAll = function (testcases, recommender) {
+    // assert
+    var results = _.map(testcases, function(testcase) {
+      testcase.assert(recommender);
+    });
+    return results;
+  };
+
+  return Testcase;
 });

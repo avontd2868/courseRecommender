@@ -1,17 +1,22 @@
-define(['underscore'], function (_) {
+define(['lib/Class', 'underscore'], function (Class, _) {
 
-  return function (root) {
+  return function (global) {
+
+    // make Class global
+    global.Class = Class;
+
+    global.L = console.log;
 
     /**
-     * Extend underscorew
+     * Extend underscore.js (_)
      */
     _.mixin({
       /**
        * permissive sum() method to array
        */
-      sum: function () {
+      sum: function (list) {
         var total = 0;
-        this.forEach(function (x) {
+        this.each(list, function (x) {
           if (!isNaN(parseFloat(x)) && isFinite(x)) {
             total += x;
           }
@@ -22,8 +27,8 @@ define(['underscore'], function (_) {
       /**
        * Shorthand avg() method
        */
-      avg: function () {
-        return this.length > 0 ? this.sum() / this.length : 0;
+      avg: function (list) {
+        return this.size(list) > 0 ? this.sum(list) / this.size(list) : 0;
       }
     });
 
@@ -42,7 +47,7 @@ define(['underscore'], function (_) {
       };
     }
 
-    root.constructMatrix = function (a, b, func) {
+    global.constructMatrix = function (a, b, func) {
       var matrix = [];
       var row;
       a.forEach(function (itemA) {
